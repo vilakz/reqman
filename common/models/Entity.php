@@ -37,6 +37,7 @@ class Entity extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['createdAt', 'updatedAt'], 'safe'],
             [['name'], 'string', 'max' => 255],
+            [['path'], 'string', 'max' => 200],
             [['projectId'], 'exist', 'skipOnError' => true, 'targetClass' => Project::className(), 'targetAttribute' => ['projectId' => 'id']],
         ];
     }
@@ -53,6 +54,7 @@ class Entity extends \yii\db\ActiveRecord
             'description' => 'Описание',
             'createdAt' => 'Время создания',
             'updatedAt' => 'Время обновления',
+            'path' => 'Путь',
         ];
     }
 

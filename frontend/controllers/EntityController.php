@@ -6,6 +6,7 @@ use Yii;
 use common\models\Entity;
 use common\models\EntitySearch;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -43,7 +44,7 @@ class EntityController extends Controller
                         'roles' => ['projectEdit'],
                     ],
                     [
-                        'actions' => ['update', 'delete'],
+                        'actions' => ['update', 'delete', 'select-path'],
                         'allow' => true,
                         'roles' => ['projectEdit'],
                         'matchCallback' => function($rule, $action) {
@@ -183,4 +184,66 @@ class EntityController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    /**
+     * Получить возможные path по нескольким символам по ajax
+     * @param $id integer Entity.id
+     * @param $word string искомые символы
+     * @return array
+     * @throws NotFoundHttpException
+     */
+    public function actionSelectPath($id, $word)
+    {
+        if (!Yii::$app->request->isAjax) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $query = Entity::find()
+            ->orderBy(['entity.path' => SORT_DESC])
+            ->andWhere(new \yii\db\Expression("`entity`.`path` LIKE '%".($this->processSlashes($word))."%'") )            ;
+
+        if (!\Yii::$app->user->can('administrator')) {
+            $User = Yii::$app->user->identity;
+            $query->joinWith(['project' => function($query) use ($User) {
+                /** @var $query \yii\db\ActiveQuery */
+                $query->joinWith(['userProjects' => function($query) use ($User) {
+                }]);
+            }]);
+            $query->andWhere([
+                'or',
+                ['entity.projectId' => null],
+                ['userProject.userId' => $User->id],
+            ]);
+        }
+        $result = $query->asArray()->all();
+        array_walk($result, function(&$item){
+            // защита вывода, т.к. в result все данные из таблиц entity, связанные с ней project, userProject
+            $new = ['id' => $item['id'], 'path' => $item['path']];
+            $item = $new;
+        });
+        return $result;
+    }
+
+    /**
+     * Слешевые дела
+     * @param $word
+     * @return mixed|string
+     */
+    protected function processSlashes($word)
+    {
+        $wordQuery = str_replace('\\', '\\\\\\\\', $word);
+        if (0 === strpos($wordQuery, '\\')) {
+            $strAfterReplace = preg_replace('/^(\\\\+)([^\x00]*?)$/ui','${2}',$wordQuery);
+            if (0 == strlen($strAfterReplace)) {
+                // если в поиске только один слеш, то выдать такую последовательность
+                $wordQuery = '\\\\\\\\\\\\';
+            } else {
+                $wordQuery = '\\\\'.$strAfterReplace;
+            }
+        }
+        return $wordQuery;
+    }
+
 }

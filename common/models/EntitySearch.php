@@ -19,7 +19,7 @@ class EntitySearch extends Entity
     {
         return [
             [['id', 'projectId'], 'integer'],
-            [['name', 'description', 'createdAt', 'updatedAt'], 'safe'],
+            [['name', 'path', 'description', 'createdAt', 'updatedAt'], 'safe'],
         ];
     }
 

@@ -28,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'name',
+            'path:ntext',
             [
                 'attribute' => 'projectId',
                 'value' => function($model) {
