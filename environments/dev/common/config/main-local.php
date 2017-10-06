@@ -20,5 +20,6 @@ return [
     'aliases' => [
         '@frontendWeb' => 'http://reqman.test',
         '@backendWeb' => 'http://reqmanback.test',
+        '@apiWeb' => 'http://reqmanapi.test',
     ],
 ];

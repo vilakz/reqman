@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\controllers\RequirementOverallController;
 use Yii;
 use common\models\Requirement;
 use common\models\RequirementSearch;
@@ -23,34 +24,7 @@ class RequirementController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['index'],
-                        'allow' => true,
-                        'roles' => ['projectView'],
-                    ],
-                    [
-                        'actions' => ['view'],
-                        'allow' => true,
-                        'roles' => ['projectView'],
-                        'matchCallback' => function($rule, $action) {
-                            return static::isUserInIdRequirement();
-                        },
-                    ],
-                    [
-                        'actions' => ['create'],
-                        'allow' => true,
-                        'roles' => ['projectEdit'],
-                    ],
-                    [
-                        'actions' => ['update', 'delete'],
-                        'allow' => true,
-                        'roles' => ['projectEdit'],
-                        'matchCallback' => function($rule, $action) {
-                            return static::isUserInIdRequirement();
-                        },
-                    ],
-                ],
+                'rules' => RequirementOverallController::getAccessRules(),
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -59,33 +33,6 @@ class RequirementController extends Controller
                 ],
             ],
         ];
-    }
-
-    /**
-     * Проверка что текущий пользователь состоит в проекте по требованию, где id требования в HTTP запросе id
-     * @return bool
-     */
-    protected static function isUserInIdRequirement()
-    {
-        $ret = false;
-        if (!Yii::$app->user->can('administrator')) {
-            // проверить что пользователь входит в проект
-            $id = Yii::$app->request->get('id');
-            if ($id) {
-                $Requirement = Requirement::findOne(['id' => $id]);
-                if ($Requirement) {
-                    $Project = $Requirement->project;
-                    if ($Project) {
-                        if ( Yii::$app->user->identity->isInProject($Project->id)) {
-                            $ret = true;
-                        }
-                    }
-                }
-            }
-        } else {
-            $ret = true;
-        }
-        return $ret;
     }
 
     /**

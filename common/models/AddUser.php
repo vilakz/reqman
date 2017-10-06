@@ -9,11 +9,29 @@ use yii\helpers\VarDumper;
 class AddUser extends Model
 {
 
+    /**
+     * E-mail
+     * @var string
+     */
     public $email;
 
+    /**
+     * Id Проекта
+     * @var integer
+     */
     public $projectId;
 
+    /**
+     * Право доступа к проекту для пользователя
+     * @var string
+     */
     public $type;
+
+    /**
+     * Сообщение об ошибке при работе с [[addUser]]
+     * @var string
+     */
+    public $addUserMessage = '';
 
     /**
      * @inheritdoc
@@ -21,7 +39,7 @@ class AddUser extends Model
     public function rules()
     {
         return [
-            [['email'], 'required'],
+            [['email', 'projectId'], 'required'],
             [['email'], 'email'],
             [['projectId'], 'integer'],
             ['type', 'default', 'value' => User::PROJECT_TYPE_VIEWER],
@@ -99,6 +117,7 @@ class AddUser extends Model
      */
     public function addUser()
     {
+        $this->addUserMessage = '';
         $ret = true;
         do {
             $password = true;
@@ -117,7 +136,8 @@ class AddUser extends Model
                 $User->email = $this->email;
 
                 if (!$User->save()) {
-                    $ret = "Не удалось создать пользователя, причина : [" . \yii\helpers\VarDumper::dumpAsString($User->getErrors()) . "]";
+                    $this->addUserMessage = "Не удалось создать пользователя, причина : [" . \yii\helpers\VarDumper::dumpAsString($User->getErrors()) . "]";
+                    $ret = false;
                     break; // break do-while
                 } else {
                     $auth = Yii::$app->authManager;
@@ -125,7 +145,8 @@ class AddUser extends Model
                     if ($role) {
                         $auth->assign($role, $User->id);
                     } else {
-                        $ret = "Не удалось создать пользователя, причина : [не найдена его роль]";
+                        $this->addUserMessage = "Не удалось создать пользователя, причина : [не найдена его роль]";
+                        $ret = false;
                         break; // break do-while
                     }
                 }
@@ -134,7 +155,8 @@ class AddUser extends Model
             // присоединить его к проекту
             $Project = Project::findOne(['id' => $this->projectId]);
             if (!$Project) {
-                $ret = "Пользователь создан, но он не присоединён к проекту";
+                $this->addUserMessage = "Пользователь создан, но он не присоединён к проекту";
+                $ret = false;
                 break; // break do-while
             }
             $User->link('projects', $Project);
@@ -151,7 +173,8 @@ class AddUser extends Model
                 ->setSubject('Вы добавлены в проект ' . $Project->name)
                 ->send();
             if (!$sendResult) {
-                $ret = "Пользователь создан и присоединен к проекту, но письмо ему не удалось выслать";
+                $this->addUserMessage = "Пользователь создан и присоединен к проекту, но письмо ему не удалось выслать";
+                $ret = false;
                 break; // break do-while
             }
         } while(false);

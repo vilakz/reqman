@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\controllers\EntityOverallController;
 use Yii;
 use common\models\Entity;
 use common\models\EntitySearch;
@@ -24,34 +25,7 @@ class EntityController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['index'],
-                        'allow' => true,
-                        'roles' => ['projectView'],
-                    ],
-                    [
-                        'actions' => ['view'],
-                        'allow' => true,
-                        'roles' => ['projectView'],
-                        'matchCallback' => function($rule, $action) {
-                            return static::isUserInIdEntity();
-                        },
-                    ],
-                    [
-                        'actions' => ['create'],
-                        'allow' => true,
-                        'roles' => ['projectEdit'],
-                    ],
-                    [
-                        'actions' => ['update', 'delete', 'select-path'],
-                        'allow' => true,
-                        'roles' => ['projectEdit'],
-                        'matchCallback' => function($rule, $action) {
-                            return static::isUserInIdEntity();
-                        },
-                    ],
-                ],
+                'rules' => EntityOverallController::getAccessRules(),
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -60,36 +34,6 @@ class EntityController extends Controller
                 ],
             ],
         ];
-    }
-
-    /**
-     * Проверка что текущий пользователь состоит в проекте по сущности, где id сущности в HTTP запросе id
-     * @return bool
-     */
-    protected static function isUserInIdEntity()
-    {
-        $ret = false;
-        if (!Yii::$app->user->can('administrator')) {
-            // проверить что пользователь входит в проект
-            $id = Yii::$app->request->get('id');
-            if ($id) {
-                $Entity = Entity::findOne(['id' => $id]);
-                if ($Entity) {
-                    $Project = $Entity->project;
-                    if ($Project) {
-                        if ( Yii::$app->user->identity->isInProject($Project->id)) {
-                            $ret = true;
-                        }
-                    } else {
-                        // Если сущность без проекта, то она разрешена несмотря на проект
-                        $ret = true;
-                    }
-                }
-            }
-        } else {
-            $ret = true;
-        }
-        return $ret;
     }
 
     /**
@@ -188,62 +132,20 @@ class EntityController extends Controller
     /**
      * Получить возможные path по нескольким символам по ajax
      * @param $id integer Entity.id
-     * @param $word string искомые символы
      * @return array
      * @throws NotFoundHttpException
+     * @internal param string $word искомые символы
      */
-    public function actionSelectPath($id, $word)
+    public function actionSelectPath($id)
     {
         if (!Yii::$app->request->isAjax) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $result = EntityOverallController::actionSelectPath($this, $id);
 
-        $query = Entity::find()
-            ->orderBy(['entity.path' => SORT_DESC])
-            ->andWhere(new \yii\db\Expression("`entity`.`path` LIKE '%".($this->processSlashes($word))."%'") )            ;
-
-        if (!\Yii::$app->user->can('administrator')) {
-            $User = Yii::$app->user->identity;
-            $query->joinWith(['project' => function($query) use ($User) {
-                /** @var $query \yii\db\ActiveQuery */
-                $query->joinWith(['userProjects' => function($query) use ($User) {
-                }]);
-            }]);
-            $query->andWhere([
-                'or',
-                ['entity.projectId' => null],
-                ['userProject.userId' => $User->id],
-            ]);
-        }
-        $result = $query->asArray()->all();
-        array_walk($result, function(&$item){
-            // защита вывода, т.к. в result все данные из таблиц entity, связанные с ней project, userProject
-            $new = ['id' => $item['id'], 'path' => $item['path']];
-            $item = $new;
-        });
         return $result;
-    }
-
-    /**
-     * Слешевые дела
-     * @param $word
-     * @return mixed|string
-     */
-    protected function processSlashes($word)
-    {
-        $wordQuery = str_replace('\\', '\\\\\\\\', $word);
-        if (0 === strpos($wordQuery, '\\')) {
-            $strAfterReplace = preg_replace('/^(\\\\+)([^\x00]*?)$/ui','${2}',$wordQuery);
-            if (0 == strlen($strAfterReplace)) {
-                // если в поиске только один слеш, то выдать такую последовательность
-                $wordQuery = '\\\\\\\\\\\\';
-            } else {
-                $wordQuery = '\\\\'.$strAfterReplace;
-            }
-        }
-        return $wordQuery;
     }
 
 }

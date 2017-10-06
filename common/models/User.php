@@ -20,6 +20,7 @@ use yii\web\IdentityInterface;
  * @property integer $status
  * @property integer $createdAt
  * @property integer $updatedAt
+ * @property string $restToken
  * @property string $password write-only password
  */
 class User extends ActiveRecord implements IdentityInterface
@@ -67,6 +68,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['restToken', 'string', 'max' => 50],
         ];
     }
 
@@ -85,6 +87,7 @@ class User extends ActiveRecord implements IdentityInterface
             'status' => 'Статус',
             'createdAt' => 'Время создания',
             'updatedAt' => 'Время обновления',
+            'restToken' => 'Токен доступа для REST',
         ];
     }
 
@@ -101,7 +104,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        return static::findOne(['restToken' => $token]);
     }
 
     /**
@@ -307,6 +310,14 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $projects = $this->getProjects()->select(['name', 'id'])->indexBy('id')->column();
         return $projects;
+    }
+
+    /**
+     * Записать в [[restToken]] случайный токен
+     */
+    public function generateRestToken()
+    {
+        $this->restToken = Yii::$app->security->generateRandomString(50 - 1 - 14). '_' . date("YmdHis");
     }
 
 }

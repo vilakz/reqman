@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "project".
@@ -17,8 +18,19 @@ use Yii;
  * @property UserProject[] $userProjects
  * @property User[] $users
  */
-class Project extends \yii\db\ActiveRecord
+class Project extends ActiveRecord
 {
+
+    /**
+     * Сценарий для обновления модели по REST
+     */
+    const SCENARIO_REST_UPDATE = 'restUpdate';
+
+    /**
+     * Сценарий для создания модели по REST
+     */
+    const SCENARIO_REST_CREATE = 'restCreate';
+
     /**
      * @inheritdoc
      */
@@ -42,6 +54,17 @@ class Project extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[static::SCENARIO_REST_CREATE] = ['name'];
+        $scenarios[static::SCENARIO_REST_UPDATE] = ['name'];
+        return $scenarios;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function attributeLabels()
     {
         return [
@@ -50,6 +73,19 @@ class Project extends \yii\db\ActiveRecord
             'createdAt' => 'Время создания',
             'updatedAt' => 'Время изменения',
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        // добавить текущего пользователя в проект
+        if ($insert && isset(Yii::$app->user->identity)) {
+            $User = Yii::$app->user->identity;
+            $User->link('projects', $this);
+        }
+        parent::afterSave($insert, $changedAttributes);
     }
 
     /**

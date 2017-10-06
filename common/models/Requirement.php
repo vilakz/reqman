@@ -2,7 +2,7 @@
 
 namespace common\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "requirement".
@@ -16,8 +16,19 @@ use Yii;
  *
  * @property Project $project
  */
-class Requirement extends \yii\db\ActiveRecord
+class Requirement extends ActiveRecord
 {
+
+    /**
+     * Сценарий для добавления модели по REST
+     */
+    const SCENARIO_REST_CREATE = 'restCreate';
+
+    /**
+     * Сценарий для обновления модели по REST
+     */
+    const SCENARIO_REST_UPDATE = 'restUpdate';
+
     /**
      * @inheritdoc
      */
@@ -40,6 +51,17 @@ class Requirement extends \yii\db\ActiveRecord
             [['name', 'projectId'], 'unique', 'targetAttribute' => ['name', 'projectId'], 'message' => 'The combination of Name and Project ID has already been taken.'],
             [['projectId'], 'exist', 'skipOnError' => true, 'targetClass' => Project::className(), 'targetAttribute' => ['projectId' => 'id']],
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[static::SCENARIO_REST_CREATE] = ['name', 'body'];
+        $scenarios[static::SCENARIO_REST_UPDATE] = ['name', 'body'];
+        return $scenarios;
     }
 
     /**

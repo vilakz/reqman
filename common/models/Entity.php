@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "entity".
@@ -16,8 +17,19 @@ use Yii;
  *
  * @property Project $project
  */
-class Entity extends \yii\db\ActiveRecord
+class Entity extends ActiveRecord
 {
+
+    /**
+     * Сценарий для обновления модели по REST
+     */
+    const SCENARIO_REST_UPDATE = 'restUpdate';
+
+    /**
+     * Сценарий для создания модели по REST
+     */
+    const SCENARIO_REST_CREATE = 'restCreate';
+
     /**
      * @inheritdoc
      */
@@ -40,6 +52,17 @@ class Entity extends \yii\db\ActiveRecord
             [['path'], 'string', 'max' => 200],
             [['projectId'], 'exist', 'skipOnError' => true, 'targetClass' => Project::className(), 'targetAttribute' => ['projectId' => 'id']],
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[static::SCENARIO_REST_CREATE] = ['name', 'description', 'path'];
+        $scenarios[static::SCENARIO_REST_UPDATE] = ['name', 'description', 'path'];
+        return $scenarios;
     }
 
     /**
