@@ -14,9 +14,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-<?//= $form->field($model, 'createdAt')->textInput(['maxlength' => true]) ?>
+<?php //= $form->field($model, 'createdAt')->textInput(['maxlength' => true]) ?>
 
-<?//= $form->field($model, 'updatedAt')->textInput(['maxlength' => true]) ?>
+<?php //= $form->field($model, 'updatedAt')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Добавить' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
