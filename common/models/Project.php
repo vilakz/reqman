@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\components\behaviors\TimestampBehavior;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -37,6 +38,16 @@ class Project extends ActiveRecord
     public static function tableName()
     {
         return 'project';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
     }
 
     /**

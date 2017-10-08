@@ -12,6 +12,8 @@ class m130524_201442_init extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
+        $strCurrentTimestamp = \common\components\DbEngineInfo::getCurrentTimestamp6($this->db);
+
         $this->createTable('{{%user}}', [
             'id' => $this->primaryKey()->unsigned(),
             'username' => $this->string()->notNull()->unique(),
@@ -21,8 +23,8 @@ class m130524_201442_init extends Migration
             'email' => $this->string()->notNull()->unique(),
 
             'status' => $this->smallInteger()->notNull()->defaultValue(10),
-            'createdAt' => 'TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6)',
-            'updatedAt' => 'TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)',
+            'createdAt' => "TIMESTAMP(6) NULL",
+            'updatedAt' => "TIMESTAMP(6) DEFAULT $strCurrentTimestamp ON UPDATE $strCurrentTimestamp",
         ], $tableOptions);
 
         $this->addCommentOnColumn('{{%user}}', 'createdAt', 'Время создания');

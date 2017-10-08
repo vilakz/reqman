@@ -4,6 +4,7 @@ namespace console\controllers;
 use Yii;
 use yii\console\Controller;
 use common\models\User;
+use yii\helpers\VarDumper;
 
 class MiscController extends Controller
 {
@@ -64,6 +65,14 @@ class MiscController extends Controller
                 $auth->assign($Role, $User->id);
             }
         }
+    }
+
+    public function actionTestDb()
+    {
+        $db = Yii::$app->db;
+        echo VarDumper::dumpAsString(compact('db'), 3);
+        $res = $db->createCommand("show VARIABLES LIKE 'version_comment'")->queryOne();
+        echo VarDumper::dumpAsString(compact('res'));
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\components\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
@@ -35,6 +36,16 @@ class Requirement extends ActiveRecord
     public static function tableName()
     {
         return 'requirement';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
     }
 
     /**
