@@ -131,19 +131,18 @@ class EntityController extends Controller
 
     /**
      * Получить возможные path по нескольким символам по ajax
-     * @param $id integer Entity.id
      * @return array
      * @throws NotFoundHttpException
      * @internal param string $word искомые символы
      */
-    public function actionSelectPath($id)
+    public function actionSelectPath()
     {
         if (!Yii::$app->request->isAjax) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $result = EntityOverallController::actionSelectPath($this, $id);
+        $result = EntityOverallController::actionSelectPath($this);
 
         return $result;
     }

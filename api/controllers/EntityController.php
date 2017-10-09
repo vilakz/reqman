@@ -88,13 +88,12 @@ class EntityController extends ActiveController
 
     /**
      * Получить возможные path по нескольким символам по ajax
-     * @param $id integer Entity.id
      * @return array
      * @internal param string $word искомые символы
      */
-    public function actionSelectPath($id)
+    public function actionSelectPath()
     {
-        $result = EntityOverallController::actionSelectPath($this, $id);
+        $result = EntityOverallController::actionSelectPath($this);
 
         return $result;
     }

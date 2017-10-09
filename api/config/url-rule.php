@@ -6,7 +6,7 @@ return [
     ['class' => 'yii\rest\UrlRule', 'controller' => 'project'],
     ['class' => 'yii\rest\UrlRule', 'controller' => 'requirement'],
     ['class' => 'yii\rest\UrlRule', 'controller' => 'entity'],
-    'POST entities/select-path/<id:\d+>' => 'entity/select-path',
+    'POST entities/select-path' => 'entity/select-path',
     '/' => 'site/index',
     'POST login' => 'site/token',
 ];

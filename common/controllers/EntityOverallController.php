@@ -32,7 +32,7 @@ class EntityOverallController
                 },
             ],
             [
-                'actions' => ['create'],
+                'actions' => ['create', 'select-path'],
                 'allow' => true,
                 'roles' => ['projectEdit'],
             ],
@@ -80,10 +80,9 @@ class EntityOverallController
     /**
      * Получить возможные path по нескольким символам
      * @param $Controller Controller
-     * @param $id integer Id Entity
      * @return array
      */
-    public static function actionSelectPath($Controller, $id)
+    public static function actionSelectPath($Controller)
     {
         if ($Controller instanceof \yii\rest\Controller) {
             $bodyParams = Yii::$app->request->bodyParams;
