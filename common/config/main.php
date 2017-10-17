@@ -18,6 +18,9 @@ return [
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
         ],
+        'frontendUrlManager' => require (Yii::getAlias('@frontend/config/url-manager.php')),
+        'backendUrlManager' => require (Yii::getAlias('@backend/config/url-manager.php')),
+        'apiUrlManager' => require (Yii::getAlias('@api/config/url-manager.php')),
     ],
     'modules' => [
         'gridview' =>  [

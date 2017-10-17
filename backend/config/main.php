@@ -37,12 +37,7 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
-        ],
+        'urlManager' => require('url-manager.php'),
     ],
     'params' => $params,
 ];
