@@ -68,14 +68,14 @@ class RequirementSearch extends Requirement
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'projectId' => $this->projectId,
-            'createdAt' => $this->createdAt,
-            'updatedAt' => $this->updatedAt,
+            static::tableName() . '.id' => $this->id,
+            static::tableName() . '.projectId' => $this->projectId,
+            static::tableName() . '.createdAt' => $this->createdAt,
+            static::tableName() . '.updatedAt' => $this->updatedAt,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'body', $this->body]);
+        $query->andFilterWhere(['like', static::tableName() . '.name', $this->name])
+            ->andFilterWhere(['like', static::tableName() . '.body', $this->body]);
 
         return $dataProvider;
     }

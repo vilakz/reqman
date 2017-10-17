@@ -33,6 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($model) {
                     return $model->project->name;
                 },
+                'filter' => Yii::$app->user->identity->getProjectUserList(),
             ],
 
             'body:ntext',

@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $Project = $model->project;
                     return ($Project ? $Project->name : 'вне проектов');
                 },
+                'filter' => Yii::$app->user->identity->getProjectUserList(),
             ],
 
             'description:ntext',
