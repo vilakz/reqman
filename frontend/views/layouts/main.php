@@ -48,6 +48,7 @@ AppAsset::register($this);
         $menuItems[] = ['label' => 'Требования', 'url' => ['/requirement/index']];
         $menuItems[] = ['label' => 'Сущности', 'url' => ['/entity/index']];
     }
+    $menuItems[] = ['label' => 'Настройки', 'url' => ['/user-option/index']];
 
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Регистрация', 'url' => ['/site/signup']];

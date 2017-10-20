@@ -2,20 +2,17 @@
 
 namespace frontend\controllers;
 
-use common\controllers\RequirementOverallController;
-use common\models\UserOption;
 use Yii;
-use common\models\Requirement;
-use common\models\RequirementSearch;
-use yii\filters\AccessControl;
+use common\models\UserOption;
+use common\models\UserOptionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * RequirementController implements the CRUD actions for Requirement model.
+ * UserOptionController implements the CRUD actions for UserOption model.
  */
-class RequirementController extends Controller
+class UserOptionController extends Controller
 {
     /**
      * @inheritdoc
@@ -23,10 +20,6 @@ class RequirementController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => RequirementOverallController::getAccessRules(),
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -37,18 +30,12 @@ class RequirementController extends Controller
     }
 
     /**
-     * Lists all Requirement models.
+     * Lists all UserOption models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new RequirementSearch();
-
-        $defaultProjectId = UserOption::getOption(UserOption::NAME_ACTIVE_PROJECT);
-        if ($defaultProjectId) {
-            $searchModel->projectId = $defaultProjectId;
-        }
-
+        $searchModel = new UserOptionSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -58,7 +45,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * Displays a single Requirement model.
+     * Displays a single UserOption model.
      * @param integer $id
      * @return mixed
      */
@@ -70,17 +57,16 @@ class RequirementController extends Controller
     }
 
     /**
-     * Creates a new Requirement model.
+     * Creates a new UserOption model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Requirement();
-
-        $defaultProjectId = UserOption::getOption(UserOption::NAME_ACTIVE_PROJECT);
-        if ($defaultProjectId) {
-            $model->projectId = $defaultProjectId;
+        $model = new UserOption();
+        $user = Yii::$app->user;
+        if (!$user->can('administrator')) {
+            $model->userId = $user->id;
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -93,7 +79,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * Updates an existing Requirement model.
+     * Updates an existing UserOption model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -112,7 +98,7 @@ class RequirementController extends Controller
     }
 
     /**
-     * Deletes an existing Requirement model.
+     * Deletes an existing UserOption model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -125,15 +111,15 @@ class RequirementController extends Controller
     }
 
     /**
-     * Finds the Requirement model based on its primary key value.
+     * Finds the UserOption model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Requirement the loaded model
+     * @return UserOption the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Requirement::findOne($id)) !== null) {
+        if (($model = UserOption::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

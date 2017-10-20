@@ -298,6 +298,10 @@ class User extends ActiveRecord implements IdentityInterface
         return implode(';', \yii\helpers\ArrayHelper::getColumn($roles, 'name'));
     }
 
+    /**
+     * Получить все роли пользователя через точку с запятой
+     * @return string
+     */
     public function getProjectRights()
     {
         return $this->getUserRolesText();
@@ -321,4 +325,21 @@ class User extends ActiveRecord implements IdentityInterface
         $this->restToken = Yii::$app->security->generateRandomString(50 - 1 - 14). '_' . date("YmdHis");
     }
 
+    /**
+     * Получить список всех пользователей, ключ - id, значение - имя и email
+     * @return array
+     */
+    public static function getUsersList()
+    {
+        $users = static::find()
+            ->select(['id', 'username', 'email'])
+            ->asArray()
+            ->all()
+            ;
+        $ret = [];
+        foreach ($users as $item) {
+            $ret[$item['id']] = "{$item['username']} ({$item['email']})";
+        }
+        return $ret;
+    }
 }

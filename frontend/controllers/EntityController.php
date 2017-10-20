@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\controllers\EntityOverallController;
+use common\models\UserOption;
 use Yii;
 use common\models\Entity;
 use common\models\EntitySearch;
@@ -43,6 +44,10 @@ class EntityController extends Controller
     public function actionIndex()
     {
         $searchModel = new EntitySearch();
+        $defaultProjectId = UserOption::getOption(UserOption::NAME_ACTIVE_PROJECT);
+        if ($defaultProjectId) {
+            $searchModel->projectId = $defaultProjectId;
+        }
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -71,6 +76,11 @@ class EntityController extends Controller
     public function actionCreate()
     {
         $model = new Entity();
+
+        $defaultProjectId = UserOption::getOption(UserOption::NAME_ACTIVE_PROJECT);
+        if ($defaultProjectId) {
+            $model->projectId = $defaultProjectId;
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
