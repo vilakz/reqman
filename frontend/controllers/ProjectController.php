@@ -7,7 +7,7 @@ use common\models\UserRights;
 use kartik\grid\EditableColumnAction;
 use Yii;
 use common\models\Project;
-use common\models\ProjectSearch;
+use common\models\search\ProjectSearch;
 use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;

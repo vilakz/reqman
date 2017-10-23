@@ -2,7 +2,9 @@
 
 namespace common\models;
 
+use common\models\query\UserProjectQuery;
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "userProject".
@@ -15,7 +17,7 @@ use Yii;
  * @property Project $project
  * @property User $user
  */
-class UserProject extends \yii\db\ActiveRecord
+class UserProject extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -67,5 +69,14 @@ class UserProject extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'userId']);
+    }
+
+    /**
+     * @inheritdoc
+     * @return UserProjectQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserProjectQuery(get_called_class());
     }
 }

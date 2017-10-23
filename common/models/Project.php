@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\components\behaviors\TimestampBehavior;
+use common\models\query\ProjectQuery;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -131,4 +132,12 @@ class Project extends ActiveRecord
         return $this->hasMany(User::className(), ['id' => 'userId'])->via('userProjects');
     }
 
+    /**
+     * @inheritdoc
+     * @return ProjectQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new ProjectQuery(get_called_class());
+    }
 }

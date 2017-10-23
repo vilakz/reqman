@@ -4,7 +4,7 @@ namespace api\controllers;
 
 use common\controllers\RequirementOverallController;
 use common\models\Requirement;
-use common\models\RequirementSearch;
+use common\models\search\RequirementSearch;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\auth\HttpBasicAuth;

@@ -4,7 +4,7 @@ namespace api\controllers;
 
 use common\controllers\EntityOverallController;
 use common\models\Entity;
-use common\models\EntitySearch;
+use common\models\search\EntitySearch;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\auth\HttpBasicAuth;

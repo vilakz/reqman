@@ -4,7 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use common\models\UserOption;
-use common\models\UserOptionSearch;
+use common\models\search\UserOptionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

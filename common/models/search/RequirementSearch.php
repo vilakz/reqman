@@ -1,16 +1,16 @@
 <?php
 
-namespace common\models;
+namespace common\models\search;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Entity;
+use common\models\Requirement;
 
 /**
- * EntitySearch represents the model behind the search form about `common\models\Entity`.
+ * RequirementSearch represents the model behind the search form about `common\models\Requirement`.
  */
-class EntitySearch extends Entity
+class RequirementSearch extends Requirement
 {
     /**
      * @inheritdoc
@@ -19,7 +19,7 @@ class EntitySearch extends Entity
     {
         return [
             [['id', 'projectId'], 'integer'],
-            [['name', 'path', 'description', 'createdAt', 'updatedAt'], 'safe'],
+            [['name', 'body', 'createdAt', 'updatedAt'], 'safe'],
         ];
     }
 
@@ -41,20 +41,17 @@ class EntitySearch extends Entity
      */
     public function search($params)
     {
-        $query = Entity::find();
+        $query = Requirement::find();
 
         // add conditions that should always apply here
         if (!\Yii::$app->user->can('administrator')) {
             $User = Yii::$app->user->identity;
             $query->joinWith(['project' => function($query) use ($User) {
                 /** @var $query \yii\db\ActiveQuery */
-                $query->joinWith(['userProjects']);
+                $query->joinWith(['userProjects' => function($query) use ($User) {
+                    $query->andWhere(['userProject.userId' => $User->id]);
+                }]);
             }]);
-            $query->andWhere([
-                'or',
-                ['entity.projectId' => null],
-                ['userProject.userId' => $User->id]
-            ]);
         }
 
         $dataProvider = new ActiveDataProvider([
@@ -78,7 +75,7 @@ class EntitySearch extends Entity
         ]);
 
         $query->andFilterWhere(['like', static::tableName() . '.name', $this->name])
-            ->andFilterWhere(['like', static::tableName() . '.description', $this->description]);
+            ->andFilterWhere(['like', static::tableName() . '.body', $this->body]);
 
         return $dataProvider;
     }

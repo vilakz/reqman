@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\components\behaviors\TimestampBehavior;
+use common\models\query\RequirementQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -102,5 +103,14 @@ class Requirement extends ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'projectId'])
             ->via('project');
+    }
+
+    /**
+     * @inheritdoc
+     * @return RequirementQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new RequirementQuery(get_called_class());
     }
 }

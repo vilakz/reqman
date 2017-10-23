@@ -2,7 +2,7 @@
 
 namespace api\models;
 
-class ProjectSearch extends \common\models\ProjectSearch
+class ProjectSearch extends \common\models\search\ProjectSearch
 {
 
     /**

@@ -6,7 +6,7 @@ use common\controllers\RequirementOverallController;
 use common\models\UserOption;
 use Yii;
 use common\models\Requirement;
-use common\models\RequirementSearch;
+use common\models\search\RequirementSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;

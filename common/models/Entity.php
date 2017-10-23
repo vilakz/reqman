@@ -5,6 +5,7 @@ namespace common\models;
 use common\components\behaviors\TimestampBehavior;
 use Yii;
 use yii\db\ActiveRecord;
+use common\models\query\EntityQuery;
 
 /**
  * This is the model class for table "entity".
@@ -98,5 +99,14 @@ class Entity extends ActiveRecord
     public function getProject()
     {
         return $this->hasOne(Project::className(), ['id' => 'projectId']);
+    }
+
+    /**
+     * @inheritdoc
+     * @return EntityQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new EntityQuery(get_called_class());
     }
 }

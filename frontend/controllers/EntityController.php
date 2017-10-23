@@ -6,7 +6,7 @@ use common\controllers\EntityOverallController;
 use common\models\UserOption;
 use Yii;
 use common\models\Entity;
-use common\models\EntitySearch;
+use common\models\search\EntitySearch;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;

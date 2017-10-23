@@ -1,6 +1,7 @@
 <?php
 namespace common\models;
 
+use common\models\query\UserQuery;
 use Yii;
 use yii\base\NotSupportedException;
 use common\components\behaviors\TimestampBehavior;
@@ -341,5 +342,14 @@ class User extends ActiveRecord implements IdentityInterface
             $ret[$item['id']] = "{$item['username']} ({$item['email']})";
         }
         return $ret;
+    }
+
+    /**
+     * @inheritdoc
+     * @return UserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
     }
 }

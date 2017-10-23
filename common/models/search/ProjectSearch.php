@@ -1,16 +1,16 @@
 <?php
 
-namespace common\models;
+namespace common\models\search;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Requirement;
+use common\models\Project;
 
 /**
- * RequirementSearch represents the model behind the search form about `common\models\Requirement`.
+ * ProjectSearch represents the model behind the search form about `common\models\Project`.
  */
-class RequirementSearch extends Requirement
+class ProjectSearch extends Project
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class RequirementSearch extends Requirement
     public function rules()
     {
         return [
-            [['id', 'projectId'], 'integer'],
-            [['name', 'body', 'createdAt', 'updatedAt'], 'safe'],
+            [['id'], 'integer'],
+            [['name', 'createdAt', 'updatedAt'], 'safe'],
         ];
     }
 
@@ -41,16 +41,15 @@ class RequirementSearch extends Requirement
      */
     public function search($params)
     {
-        $query = Requirement::find();
+        $query = Project::find();
 
         // add conditions that should always apply here
         if (!\Yii::$app->user->can('administrator')) {
+            /** @var $User User */
             $User = Yii::$app->user->identity;
-            $query->joinWith(['project' => function($query) use ($User) {
-                /** @var $query \yii\db\ActiveQuery */
-                $query->joinWith(['userProjects' => function($query) use ($User) {
-                    $query->andWhere(['userProject.userId' => $User->id]);
-                }]);
+            $query->joinWith(['userProjects' => function($query) use ($User) {
+                /** @var $User User */
+                $query->andWhere(['userProject.userId' => $User->id]);
             }]);
         }
 
@@ -68,14 +67,12 @@ class RequirementSearch extends Requirement
 
         // grid filtering conditions
         $query->andFilterWhere([
-            static::tableName() . '.id' => $this->id,
-            static::tableName() . '.projectId' => $this->projectId,
-            static::tableName() . '.createdAt' => $this->createdAt,
-            static::tableName() . '.updatedAt' => $this->updatedAt,
+            'id' => $this->id,
+            'createdAt' => $this->createdAt,
+            'updatedAt' => $this->updatedAt,
         ]);
 
-        $query->andFilterWhere(['like', static::tableName() . '.name', $this->name])
-            ->andFilterWhere(['like', static::tableName() . '.body', $this->body]);
+        $query->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
     }

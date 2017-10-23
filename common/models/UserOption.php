@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\models\query\UserOptionQuery;
 use Yii;
 use yii\helpers\VarDumper;
 
@@ -198,5 +199,14 @@ class UserOption extends \yii\db\ActiveRecord
             $ret = $names[$this->name];
         }
         return $ret;
+    }
+
+    /**
+     * @inheritdoc
+     * @return UserOptionQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserOptionQuery(get_called_class());
     }
 }
